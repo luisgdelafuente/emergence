@@ -1,0 +1,47 @@
+import matplotlib.pyplot as plt
+import random
+import numpy as np
+from IPython.display import clear_output  # Import the clear_output function
+
+# Set up the grid
+cell_size = 10
+rows = 50
+columns = 100
+grid = np.zeros((rows, columns), dtype=int)
+
+# Set up the colors
+dead_color = (255, 255, 255)
+alive_color = (0, 0, 0)
+
+# Set up the initial state of the cells (change here to fix the initial spread)
+for i in range(rows):
+    for j in range(columns // 2):
+        grid[i, j] = random.choice([0, 1])
+
+# Function to update the state of the cells
+def update_grid(grid):
+    new_grid = np.copy(grid)
+    for i in range(rows):
+        for j in range(columns):
+            # Count the number of alive neighbors
+            alive_neighbors = np.sum(grid[max(0, i-1):min(rows, i+2), max(0, j-1):min(columns, j+2)]) - grid[i, j]
+            # Update the cell based on the rules of the Game of Life
+            if grid[i, j] == 1:
+                if alive_neighbors < 2 or alive_neighbors > 3:
+                    new_grid[i, j] = 0
+            else:
+                if alive_neighbors == 3:
+                    new_grid[i, j] = 1
+    return new_grid
+
+# Main loop to simulate the steps of the game and display the evolution
+steps = 500  # Number of steps to run the simulation
+for step in range(steps):
+    plt.imshow(grid, cmap='binary')
+    plt.xticks([]), plt.yticks([])
+    plt.pause(0.02)
+    clear_output(wait=True)  # Clear the previous frame before displaying the new one
+    grid = update_grid(grid)
+
+# Show the final state after the simulation ends
+plt.show()
